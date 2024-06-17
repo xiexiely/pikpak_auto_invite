@@ -11,7 +11,7 @@ import recognize
 from rich import print_json
 
 DEBUG_MODE = False # Debug模式，是否打印请求返回信息
-PROXY = input('请输入代理，如不需要直接回车:') # 代理，如果多次出现IP问题可尝试将自己所用的魔法设置为代理。例如：使用clash则设置为 'http://127.0.0.1:7890'
+PROXY = os.getenv('PROXY') # 代理，如果多次出现IP问题可尝试将自己所用的魔法设置为代理。例如：使用clash则设置为 'http://127.0.0.1:7890'
 # PROXY = 'http://127.0.0.1:7890'
 
 # 滑块数据加密
@@ -588,7 +588,10 @@ async def main():
     # print('本脚本是固定滑动次数,多次碰撞验证版！！')
     # print('成功与否全凭运气, 可能几次就成功, 也可能几十次都不成功, 请自行测试, 祝使用愉快!')
     try:
-        incode = input('请输入邀请码:')
+        incode = os.getenv('INVITE_CODE')
+        if not incode:
+            print("环境变量 INVITE_CODE 未设置，请设置邀请码。")
+            return
         start_time = time.time()
         xid = str(uuid.uuid4()).replace("-", "")
         mail = await get_mail()
@@ -620,12 +623,10 @@ async def main():
             print(f'邀请码: {incode} ==> 邀请成功, 用时: {run_time} 秒')
         else:
             print(f'邀请码: {incode} ==> 邀请失败, 用时: {run_time} 秒')
-        input('按回车键再次邀请!!!')
-        await main()
+        exit()
     except Exception as e:
         print(f'异常捕获:{e}')
-        print('请检查网络环境,(开启科学上网)重试!!!')
-        input('按回车键重试!!!')
+        print('发生错误，重试中...')
         await main()
 
 
